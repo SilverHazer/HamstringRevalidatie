@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamstring Herstelplan - Interactieve Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: rgba(31, 33, 33, 1);
+                --color-surface: rgba(38, 40, 40, 1);
+                --color-text: rgba(245, 245, 245, 1);
+                --color-text-secondary: rgba(167, 169, 169, 1);
+                --color-primary: rgba(50, 184, 198, 1);
+                --color-primary-hover: rgba(45, 166, 178, 1);
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .phase-selector {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: var(--color-background);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .phase-btn {
+            padding: 8px 14px;
+            border: 2px solid var(--color-primary);
+            background: var(--color-surface);
+            color: var(--color-primary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 200ms;
+        }
+
+        .phase-btn.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .phase-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .exercise-card {
+            display: none;
+            animation: fadeIn 300ms ease-in-out;
+        }
+
+        .exercise-card.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .phase-label {
+            background: var(--color-primary);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 8px;
+            width: fit-content;
+        }
+
+        .exercise-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .exercise-images {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .image-container {
+            flex: 1;
+            background: var(--color-background);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--color-primary);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-label {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            border-top: 1px solid var(--color-primary);
+        }
+
+        .exercise-details {
+            background: var(--color-background);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .detail-value {
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .instructions {
+            background: rgba(168, 75, 47, 0.08);
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-warning);
+            margin-bottom: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .instructions strong {
+            display: block;
+            color: var(--color-warning);
+            margin-bottom: 8px;
+        }
+
+        .rest-break {
+            background: rgba(33, 128, 141, 0.12);
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-success);
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-success);
+        }
+
+        .navigation {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 200ms;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.secondary {
+            background: var(--color-background);
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .nav-btn.secondary:hover:not(:disabled) {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .exercise-counter {
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            padding: 8px;
+            background: var(--color-background);
+            border-radius: 20px;
+        }
+
+        .day-label {
+            background: var(--color-warning);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .session-overview {
+            background: var(--color-background);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--color-orange-500);
+        }
+
+        .session-overview h3 {
+            color: var(--color-orange-500);
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .session-exercises {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            border-top: 1px solid var(--color-background);
+            display: none;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--color-background);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-primary);
+            width: 0%;
+            transition: width 300ms;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 20px;
+            }
+
+            .exercise-name {
+                font-size: 20px;
+            }
+
+            .nav-btn {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+
+            .image-container img {
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💪 Hamstring Herstelplan</h1>
+            <p>Interactieve Trainings Gids</p>
+        </header>
+
+        <div class="phase-selector">
+            <button class="phase-btn active" onclick="selectPhase(1)">Fase 1</button>
+            <button class="phase-btn" onclick="selectPhase(2)">Fase 2</button>
+            <button class="phase-btn" onclick="selectPhase(3)">Fase 3</button>
+        </div>
+
+        <div class="main-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- PHASE 1 EXERCISES -->
+            <div class="exercise-card active" data-phase="1" data-exercise="0">
+                <div class="phase-label">FASE 1 - WEEK 1–2</div>
+                <div class="exercise-name">Foam Rolling (Hamstring)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1584622181563-430f63602d4b?w=300&h=200&fit=crop" alt="Foam rolling beginstand">
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1592922333529-8b3fc4b2a56f?w=300&h=200&fit=crop" alt="Foam rolling beweging">
+                        <div class="image-label">Rol beweging</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">2 × 60 sec</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">Dagelijks</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tempo:</span>
+                        <span class="detail-value">Langzaam</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rust:</span>
+                        <span class="detail-value">N.v.t. (voorbereiding)</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Uitvoering:</strong>
+                    Zit op de grond met een foam roller onder je hamstring. Rol langzaam van heup naar knie. Focus op pijnpunten (trigger points) en blijf daar 10–15 sec. Geen scherpe bewegingen.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="1" data-exercise="1">
+                <div class="phase-label">FASE 1 - WEEK 1–2</div>
+                <div class="exercise-name">Monster Walks</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1570829460005-c840387bb1da?w=300&h=200&fit=crop" alt="Monster walks beginstand">
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1606335543669-a1a5afb73fd3?w=300&h=200&fit=crop" alt="Monster walks been omhoog">
+                        <div class="image-label">Been omhoog</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 12 per been</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">4x per week</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Intensiteit:</span>
+                        <span class="detail-value">75% ROM</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rust:</span>
+                        <span class="detail-value">45–60 sec tussen sets</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Uitvoering:</strong>
+                    Sta rechtop. Zwai één been gestrek omhoog naar tegenovergestelde hand. Controleer de beweging; dit is dynamisch stretchen, geen ballistische schokken.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="1" data-exercise="2">
+                <div class="phase-label">FASE 1 - WEEK 1–2</div>
+                <div class="exercise-name">Ground Sweeps</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1564466809058-bf4ff63e2352?w=300&h=200&fit=crop" alt="Ground sweeps beginstand">
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1566594335651-a1d19f2d9d37?w=300&h=200&fit=crop" alt="Ground sweeps buigen">
+                        <div class="image-label">Buig + sweep</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 10</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">4x per week</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tempo:</span>
+                        <span class="detail-value">Controleerd</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rust:</span>
+                        <span class="detail-value">60–90 sec tussen sets</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Uitvoering:</strong>
+                    Sta rechtop. Hiel op de grond, teen omhoog. Buig voorover vanuit heup terwijl je met handen naar je grond zwaait. Voel de rek in hamstring en achterkant van been.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="1" data-exercise="3">
+                <div class="phase-label">FASE 1 - WEEK 1–2</div>
+                <div class="exercise-name">Supine Bridge (2 benen)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1532619675605-1ede6c2e7c50?w=300&h=200&fit=crop" alt="Supine bridge beginstand">
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop" alt="Supine bridge omhoog">
+                        <div class="image-label">Bridge omhoog</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 12</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">Dagelijks</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Hold:</span>
+                        <span class="detail-value">2 sec boven</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rust:</span>
+                        <span class="detail-value">60–90 sec tussen sets</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Uitvoering:</strong>
+                    Lig op je rug, knieën gebogen, voeten plat. Duw heupen omhoog tot je lichaam een rechte lijn vormt van knieën tot schouders. Voel hamstring en gluteus samentrekken.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="1" data-exercise="4">
+                <div class="phase-label">FASE 1 - WEEK 1–2</div>
+                <div class="exercise-name">Prone Hamstring Curls</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=300&h=200&fit=crop" alt="Prone hamstring curl beginstand">
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.unsplash.com/photo-1533241749159-196cbb69ac23?w=300&h=200&fit=crop" alt="Prone hamstring curl beweging">
+                        <div class="image-label">Knie buigen</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 8–10</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">3x per week</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tempo:</span>
+                        <span class="detail-value">1 sec omhoog / 5 sec omlaag</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rust:</span>
+                        <span class="detail-value">60–90 sec tussen sets</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Uitvoering:</strong>
+                    Lig op je buik, benen gestrek. Buig één knie langzaam omhoog (1 sec), daarna zeer langzaam teruglaten (5 sec). Excentrische fase is het belangrijkste.
+                </div>
+            </div>
+
+            <!-- PHASE 2 EXERCISES -->
+            <div class="exercise-card" data-phase="2" data-exercise="0">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="day-label">MAANDAG - INTENSIEF</div>
+                <div class="session-overview">
+                    <h3>📋 Sessie Overzicht</h3>
+                    <div class="session-exercises">
+                        Foam Rolling (5 min) → Dynamic Stretching → Nordic Hamstring Curls → Single-Leg RDL → Swiss Ball Curls → Plank → Stretch
+                    </div>
+                </div>
+
+                <div class="exercise-name">Foam Rolling (Pre-Training)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Foam rolling trigger point" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f5f5f5%22/%3E%3Ccircle cx=%22100%22 cy=%2250%22 r=%2225%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2285%22 y1=%2275%22 x2=%2275%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%2210%22/%3E%3Cline x1=%22115%22 y1=%2275%22 x2=%22125%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%2210%22/%3E%3Ccircle cx=%2275%22 cy=%22160%22 r=%2210%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%22125%22 cy=%22160%22 r=%2210%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%2295%22 cy=%22115%22 r=%2214%22 fill=%22%23ff6b35%22 opacity=%220.5%22 stroke=%22%23ff6b35%22 stroke-width=%222%22/%3E%3Ctext x=%22100%22 y=%22195%22 text-anchor=%22middle%22 font-size=%2211%22 fill=%22%23666%22%3EFocus trigger point%3C/text%3E%3C/svg%3E'">
+                        <div class="image-label">Trigger Point</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.pexels.com/photos/4327048/pexels-photo-4327048.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Foam rolling beweging" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f5f5f5%22/%3E%3Ccircle cx=%22100%22 cy=%2250%22 r=%2225%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2285%22 y1=%2275%22 x2=%2275%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%2210%22/%3E%3Cline x1=%22115%22 y1=%2275%22 x2=%22125%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%2210%22/%3E%3Ccircle cx=%2275%22 cy=%22160%22 r=%2210%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%22125%22 cy=%22160%22 r=%2210%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%2295%22 cy=%22135%22 r=%2214%22 fill=%22%23ff6b35%22 opacity=%220.5%22 stroke=%22%23ff6b35%22 stroke-width=%222%22/%3E%3Cpath d=%22M 95 120 L 95 150%22 stroke=%22%23ff6b35%22 stroke-width=%222%22 stroke-dasharray=%225,5%22 marker-end=%22url(%23arrowhead)%22/%3E%3Ctext x=%22100%22 y=%22195%22 text-anchor=%22middle%22 font-size=%2211%22 fill=%22%23666%22%3ERol beweging%3C/text%3E%3C/svg%3E'">
+                        <div class="image-label">Rol beweging</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Duur:</span>
+                        <span class="detail-value">5 minuten totaal</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Focus:</span>
+                        <span class="detail-value">Hamstring + Gluteus</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Timing:</span>
+                        <span class="detail-value">Voor training (essentieel)</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Waarom foam rolling?</strong>
+                    Vermindert DOMS en spierstarheid. Bereid weefsel voor op training. 90 sec foam rolling reduceert spierpijn na eccentrische training.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="1">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Dynamic Stretching (Monster Walks)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <img src="https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Dynamic stretching begin" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f5f5f5%22/%3E%3Ccircle cx=%22100%22 cy=%2235%22 r=%2222%22 fill=%22%23217f8d%22/%3E%3Crect x=%2293%22 y=%2257%22 width=%2214%22 height=%2245%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2293%22 y1=%22102%22 x2=%2275%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Cline x1=%22107%22 y1=%22102%22 x2=%22125%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Ccircle cx=%2275%22 cy=%22165%22 r=%226%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%22125%22 cy=%22165%22 r=%226%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2293%22 y1=%2257%22 x2=%2260%22 y2=%2220%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Cline x1=%22107%22 y1=%2257%22 x2=%22140%22 y2=%2240%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Ctext x=%22100%22 y=%22195%22 text-anchor=%22middle%22 font-size=%2211%22 fill=%22%23666%22%3EArm + Been%3C/text%3E%3C/svg%3E'">
+                        <div class="image-label">Beginstelling</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="https://images.pexels.com/photos/4327048/pexels-photo-4327048.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Dynamic stretching actief" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect width=%22200%22 height=%22200%22 fill=%22%23f5f5f5%22/%3E%3Ccircle cx=%22100%22 cy=%2235%22 r=%2222%22 fill=%22%23217f8d%22/%3E%3Crect x=%2293%22 y=%2257%22 width=%2214%22 height=%2245%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2293%22 y1=%22102%22 x2=%2270%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Cline x1=%22107%22 y1=%22102%22 x2=%22130%22 y2=%22160%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Ccircle cx=%2270%22 cy=%22165%22 r=%226%22 fill=%22%23217f8d%22/%3E%3Ccircle cx=%22130%22 cy=%22165%22 r=%226%22 fill=%22%23217f8d%22/%3E%3Cline x1=%2293%22 y1=%2257%22 x2=%2240%22 y2=%2215%22 stroke=%22%23217f8d%22 stroke-width=%227%22 opacity=%220.8%22/%3E%3Cline x1=%22107%22 y1=%2257%22 x2=%22155%22 y2=%2255%22 stroke=%22%23217f8d%22 stroke-width=%227%22/%3E%3Cpath d=%22M 100 110 L 95 145%22 stroke=%22%23ff6b35%22 stroke-width=%222%22 stroke-dasharray=%225,5%22 marker-end=%22url(%23arrowhead)%22/%3E%3Ctext x=%22100%22 y=%22195%22 text-anchor=%22middle%22 font-size=%2211%22 fill=%22%23666%22%3EBeen omhoog%3C/text%3E%3C/svg%3E'">
+                        <div class="image-label">Been opzwaaien</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 10 bewegingen</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">Alle trainingen</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tempo:</span>
+                        <span class="detail-value">75% snelheid</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Waarom dynamisch, niet statisch?</strong>
+                    Dynamic stretching verbetert ROM zonder krachtsverlies. Statisch stretchen dempt hamstring activatie. Dynamic stretch activeert spier.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="2">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Nordic Hamstring Curl (Voorbereiding)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="75" y1="180" x2="75" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <line x1="125" y1="180" x2="125" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <ellipse cx="100" cy="110" rx="18" ry="30" fill="#217f8d"/>
+                            <ellipse cx="75" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <ellipse cx="125" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <circle cx="80" cy="60" r="8" fill="#666" opacity="0.5"/>
+                            <circle cx="120" cy="60" r="8" fill="#666" opacity="0.5"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Knieën vast</text>
+                        </svg>
+                        <div class="image-label">Rechtop zittend</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="75" y1="180" x2="75" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <line x1="125" y1="180" x2="125" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <path d="M 100 110 Q 80 130 70 160" stroke="#217f8d" stroke-width="12" fill="none"/>
+                            <ellipse cx="75" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <ellipse cx="125" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <circle cx="80" cy="60" r="8" fill="#666" opacity="0.5"/>
+                            <circle cx="120" cy="60" r="8" fill="#666" opacity="0.5"/>
+                            <line x1="85" y1="110" x2="75" y2="90" stroke="#217f8d" stroke-width="6" opacity="0.6"/>
+                            <line x1="115" y1="110" x2="120" y2="90" stroke="#217f8d" stroke-width="6" opacity="0.6"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Vallen (7 sec)</text>
+                        </svg>
+                        <div class="image-label">Langzaam vallen</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 5–6</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">1x per week (week 4)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Variant:</span>
+                        <span class="detail-value">"Drop only" (vallen)</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Execu execution (Drop Only Variant):</strong>
+                    Zit op je knieën (gebruik kussentje). Enkels vastgezet. Laat je lichaam langzaam naar voren vallen (7–10 sec). Vang jezelf op met handen. Dit is voorbereiding op volledige Nordic.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="3">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Single-Leg Romanian Deadlift (RDL)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="50" r="20" fill="#217f8d"/>
+                            <line x1="100" y1="70" x2="95" y2="135" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="100" y1="70" x2="105" y2="160" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="95" cy="140" r="6" fill="#217f8d"/>
+                            <circle cx="105" cy="165" r="8" fill="#217f8d"/>
+                            <rect x="90" y="65" width="8" height="12" fill="#ff6b35" opacity="0.6"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Beginstand</text>
+                        </svg>
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="60" r="20" fill="#217f8d"/>
+                            <line x1="100" y1="80" x2="90" y2="140" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="100" y1="80" x2="135" y2="130" stroke="#217f8d" stroke-width="8" opacity="0.6"/>
+                            <circle cx="90" cy="145" r="6" fill="#217f8d"/>
+                            <circle cx="135" cy="135" r="8" fill="#217f8d"/>
+                            <line x1="95" y1="75" x2="85" y2="60" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                            <rect x="82" y="65" width="8" height="12" fill="#ff6b35" opacity="0.6"/>
+                            <path d="M 100 130 Q 105 145 115 155" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Buig voorover</text>
+                        </svg>
+                        <div class="image-label">Buig voorover</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">4 × 10 per been</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Gewicht:</span>
+                        <span class="detail-value">5–7 kg (dumbbell)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">3x per week</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Executie:</strong>
+                    Sta op één been. Houd dumbbell in tegenovergestelde hand. Buig voorover vanuit heup terwijl vrije been achteren strekt. Rug recht; voel rek in hamstring van standbeen. Kom krachtig terug omhoog.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="4">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Swiss Ball Hamstring Curl</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <ellipse cx="100" cy="60" rx="25" ry="20" fill="#217f8d"/>
+                            <line x1="75" y1="80" x2="60" y2="160" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="125" y1="80" x2="140" y2="160" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="60" cy="165" r="8" fill="#217f8d"/>
+                            <circle cx="140" cy="165" r="8" fill="#217f8d"/>
+                            <circle cx="100" cy="90" r="18" fill="#50b8c6" opacity="0.7" stroke="#50b8c6" stroke-width="2"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Heupen omhoog</text>
+                        </svg>
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <ellipse cx="100" cy="65" rx="25" ry="20" fill="#217f8d"/>
+                            <line x1="75" y1="85" x2="70" y2="160" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="125" y1="85" x2="130" y2="160" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="70" cy="165" r="8" fill="#217f8d"/>
+                            <circle cx="130" cy="165" r="8" fill="#217f8d"/>
+                            <circle cx="85" cy="120" r="18" fill="#50b8c6" opacity="0.7" stroke="#50b8c6" stroke-width="2"/>
+                            <path d="M 100 95 Q 90 115 85 135" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Bal terugrollen</text>
+                        </svg>
+                        <div class="image-label">Bal naar buik</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">4 × 10</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tempo:</span>
+                        <span class="detail-value">1 sec omhoog / 5–7 sec omlaag</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">2x per week</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Executie:</strong>
+                    Lig op rug, hakken op Swiss ball. Duw heupen omhoog tot rechte lijn. Trek bal met hakken naar je billen (1 sec), rol daarna extreem langzaam terug (5–7 sec). Terugrol is belangrijkste.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="5">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Plank & Side Plank</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="60" y1="100" x2="60" y2="180" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="140" y1="100" x2="140" y2="180" stroke="#217f8d" stroke-width="8"/>
+                            <path d="M 60 100 Q 100 50 140 100" stroke="#217f8d" stroke-width="10" fill="none"/>
+                            <circle cx="60" cy="180" r="6" fill="#217f8d"/>
+                            <circle cx="140" cy="180" r="6" fill="#217f8d"/>
+                            <rect x="90" y="75" width="20" height="15" fill="#ff6b35" opacity="0.6"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Plank</text>
+                        </svg>
+                        <div class="image-label">Frontale plank</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="80" y1="120" x2="80" y2="180" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="140" y1="100" x2="140" y2="180" stroke="#217f8d" stroke-width="8"/>
+                            <path d="M 80 120 Q 110 60 140 100" stroke="#217f8d" stroke-width="10" fill="none"/>
+                            <circle cx="80" cy="180" r="6" fill="#217f8d"/>
+                            <circle cx="140" cy="180" r="6" fill="#217f8d"/>
+                            <rect x="95" y="85" width="20" height="15" fill="#ff6b35" opacity="0.6"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Side plank</text>
+                        </svg>
+                        <div class="image-label">Side plank</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 30–45 sec</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">4x per week</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Doel:</span>
+                        <span class="detail-value">Rompstabiliteit</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Executie:</strong>
+                    Frontale plank: Onderarmen op grond; lichaam rechte lijn. Side plank: Zijwaarts op één onderarm. Heupen omhoog. Beide essentieel voor stabiliteit en hamstring bescherming.
+                </div>
+            </div>
+
+            <div class="rest-break">
+                ⏸️ RUSTPAUZE: 60–90 SECONDEN TUSSEN SETS
+            </div>
+
+            <div class="exercise-card" data-phase="2" data-exercise="6">
+                <div class="phase-label">FASE 2 - WEEK 3–4</div>
+                <div class="exercise-name">Statische Hamstring Stretch</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="60" r="20" fill="#217f8d"/>
+                            <line x1="100" y1="80" x2="100" y2="140" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="100" y1="140" x2="90" y2="170" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="90" cy="175" r="8" fill="#217f8d"/>
+                            <line x1="95" y1="140" x2="130" y2="170" stroke="#217f8d" stroke-width="8" opacity="0.5"/>
+                            <circle cx="130" cy="175" r="8" fill="#217f8d" opacity="0.5"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Zittend strek</text>
+                        </svg>
+                        <div class="image-label">Zittend strek</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="70" r="20" fill="#217f8d"/>
+                            <line x1="100" y1="90" x2="100" y2="140" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="100" y1="140" x2="80" y2="175" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="80" cy="180" r="8" fill="#217f8d"/>
+                            <line x1="90" y1="90" x2="60" y2="50" stroke="#217f8d" stroke-width="6" opacity="0.5"/>
+                            <path d="M 100 140 Q 85 155 75 175" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Buig voorover</text>
+                        </svg>
+                        <div class="image-label">Buig voorover</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Duur:</span>
+                        <span class="detail-value">3 × 45–60 sec</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">Na elke training</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Intensiteit:</span>
+                        <span class="detail-value">Tot waar je geen pijn voelt</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Executie (Static Stretch ENKEL NA TRAINING):</strong>
+                    Zit rechtop, één been gestrek vooruit. Buig langzaam voorover. Voel rek in hamstring en achterkant been. Houd 45–60 sec. Herhaal beide benen.
+                </div>
+            </div>
+
+            <!-- PHASE 3 EXERCISES -->
+            <div class="exercise-card" data-phase="3" data-exercise="0">
+                <div class="phase-label">FASE 3 - WEEK 5–6+</div>
+                <div class="day-label">VRIJDAG - INTENSIEF</div>
+                <div class="session-overview">
+                    <h3>📋 Sessie Overzicht</h3>
+                    <div class="session-exercises">
+                        Foam Rolling → Dynamic Stretching → Nordic Hamstring Curls (VOLLEDIGE ROM) → Single-Leg RDL → Prone Curls → Cadence Drill → Stretch
+                    </div>
+                </div>
+
+                <div class="exercise-name">Nordic Hamstring Curl (VOLLEDIGE ROM)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="75" y1="180" x2="75" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <line x1="125" y1="180" x2="125" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <ellipse cx="100" cy="110" rx="18" ry="30" fill="#217f8d"/>
+                            <ellipse cx="75" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <ellipse cx="125" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <circle cx="80" cy="50" r="8" fill="#666" opacity="0.5"/>
+                            <circle cx="120" cy="50" r="8" fill="#666" opacity="0.5"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Rechtop zittend</text>
+                        </svg>
+                        <div class="image-label">Beginstand</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <line x1="75" y1="180" x2="75" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <line x1="125" y1="180" x2="125" y2="140" stroke="#217f8d" stroke-width="10"/>
+                            <path d="M 100 110 Q 70 140 65 170" stroke="#217f8d" stroke-width="12" fill="none"/>
+                            <ellipse cx="75" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <ellipse cx="125" cy="140" rx="8" ry="12" fill="#217f8d"/>
+                            <line x1="85" y1="110" x2="60" y2="80" stroke="#217f8d" stroke-width="6" opacity="0.6"/>
+                            <line x1="115" y1="110" x2="120" y2="80" stroke="#217f8d" stroke-width="6" opacity="0.6"/>
+                            <circle cx="80" cy="50" r="8" fill="#666" opacity="0.5"/>
+                            <circle cx="120" cy="50" r="8" fill="#666" opacity="0.5"/>
+                            <path d="M 75 135 Q 65 145 60 165" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">Volle val + omhoog</text>
+                        </svg>
+                        <div class="image-label">Volle ROM</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">3 × 8–10</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">2–3x per week</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Variant:</span>
+                        <span class="detail-value">VOLLEDIGE ROM (zeer moeilijk)</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Nordic Hamstring Curl (VOLLEDIGE ROM):</strong>
+                    Week 5: Val langzaam → vang jezelf op. Week 6: Voeg omhoog duwen toe (zeer moeilijk). Dit is de gouden standaard; 70%+ EMG activatie. Gebruik veel handen in week 5; minder in week 6.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="3" data-exercise="1">
+                <div class="phase-label">FASE 3 - WEEK 5–6+</div>
+                <div class="exercise-name">Cadence Drill (Running Training)</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="60" cy="50" r="18" fill="#217f8d"/>
+                            <line x1="60" y1="68" x2="50" y2="120" stroke="#217f8d" stroke-width="7"/>
+                            <line x1="60" y1="68" x2="70" y2="140" stroke="#217f8d" stroke-width="7"/>
+                            <circle cx="50" cy="145" r="7" fill="#217f8d"/>
+                            <circle cx="70" cy="145" r="7" fill="#217f8d"/>
+                            <line x1="55" y1="68" x2="40" y2="40" stroke="#217f8d" stroke-width="6"/>
+                            <line x1="65" y1="68" x2="80" y2="30" stroke="#217f8d" stroke-width="6"/>
+                            <text x="40" y="180" font-size="11" fill="#666">Voet voor lichaam</text>
+                            <text x="40" y="195" font-size="10" fill="#999">(Overstriding)</text>
+                        </svg>
+                        <div class="image-label">Onjuist: Overstriding</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="50" r="18" fill="#217f8d"/>
+                            <line x1="100" y1="68" x2="85" y2="120" stroke="#217f8d" stroke-width="7"/>
+                            <line x1="100" y1="68" x2="115" y2="140" stroke="#217f8d" stroke-width="7"/>
+                            <circle cx="85" cy="145" r="7" fill="#217f8d"/>
+                            <circle cx="115" cy="145" r="7" fill="#217f8d"/>
+                            <line x1="95" y1="68" x2="85" y2="40" stroke="#217f8d" stroke-width="6"/>
+                            <line x1="105" y1="68" x2="115" y2="30" stroke="#217f8d" stroke-width="6"/>
+                            <text x="85" y="180" font-size="11" fill="#217f8d" font-weight="700">✓ Voet onder lichaam</text>
+                            <text x="85" y="195" font-size="10" fill="#999">(Juiste cadence)</text>
+                        </svg>
+                        <div class="image-label">Correct: 180+ stappen/min</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Volume:</span>
+                        <span class="detail-value">5 min @ 180 stappen/min</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Frequentie:</span>
+                        <span class="detail-value">3x per week (apart)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tool:</span>
+                        <span class="detail-value">Metronoom app (BPM = cadence)</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Waarom cadence zo belangrijk is:</strong>
+                    Overstriding (voet voor lichaam) = excessieve hamstring remkracht. Cadence ≥ 180 stappen/min = voet onder zwaartepunt. Dit lost biomechanische root cause op.
+                </div>
+            </div>
+
+            <div class="exercise-card" data-phase="3" data-exercise="2">
+                <div class="phase-label">FASE 3 - WEEK 5–6+</div>
+                <div class="exercise-name">Hamstring/Quad Kracht Testing</div>
+                
+                <div class="exercise-images">
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <circle cx="100" cy="60" r="20" fill="#217f8d"/>
+                            <line x1="100" y1="80" x2="95" y2="150" stroke="#217f8d" stroke-width="8"/>
+                            <line x1="100" y1="80" x2="105" y2="150" stroke="#217f8d" stroke-width="8"/>
+                            <circle cx="95" cy="155" r="8" fill="#217f8d"/>
+                            <circle cx="105" cy="155" r="8" fill="#217f8d"/>
+                            <line x1="75" y1="100" x2="55" y2="100" stroke="#ff6b35" stroke-width="4" marker-end="url(#arrowhead)"/>
+                            <text x="80" y="125" font-size="12" fill="#ff6b35" font-weight="700">Kracht</text>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">LSI Test</text>
+                        </svg>
+                        <div class="image-label">Week 4 & 6 testing</div>
+                    </div>
+                    <div class="image-container">
+                        <svg viewBox="0 0 200 200" style="width: 100%; height: 200px;">
+                            <rect width="200" height="200" fill="#f5f5f5"/>
+                            <g>
+                                <rect x="20" y="30" width="60" height="20" fill="#217f8d"/>
+                                <text x="50" y="45" text-anchor="middle" font-size="12" fill="white" font-weight="700">Quad 100%</text>
+                            </g>
+                            <g>
+                                <rect x="20" y="60" width="48" height="20" fill="#ff6b35" opacity="0.7"/>
+                                <text x="44" y="75" text-anchor="middle" font-size="12" fill="white" font-weight="700">Hamstring</text>
+                            </g>
+                            <line x1="68" y1="60" x2="120" y2="60" stroke="#666" stroke-width="1" stroke-dasharray="3,3"/>
+                            <text x="125" y="65" font-size="11" fill="#666">60–70% (doel)</text>
+                            <text x="100" y="195" text-anchor="middle" font-size="11" fill="#666">H/Q Ratio</text>
+                        </svg>
+                        <div class="image-label">H/Q Ratio (60–70%)</div>
+                    </div>
+                </div>
+
+                <div class="exercise-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Testen bij:</span>
+                        <span class="detail-value">Week 4 & Week 6</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Metriek 1:</span>
+                        <span class="detail-value">LSI ≥ 90%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Metriek 2:</span>
+                        <span class="detail-value">H/Q Ratio 60–70%</span>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <strong>Waarom testen?</strong>
+                    Pijn kan liegen. Je hebt objectieve data nodig. LSI = (Geopereerd been / Niet-geopereerd) × 100. Doel ≥ 90%. H/Q = Hamstring sterkte / Quad sterkte × 100. Doel 60–70% voor kniebescherming.
+                </div>
+            </div>
+
+            <div class="rest-break">
+                ✅ COMPLETE SESATIE
+            </div>
+
+        </div>
+
+        <div style="padding: 0 20px 20px;">
+            <div class="navigation">
+                <button class="nav-btn secondary" onclick="previousExercise()">← Vorig</button>
+                <div class="exercise-counter">
+                    <span id="exerciseCount">1 van 10</span>
+                </div>
+                <button class="nav-btn" onclick="nextExercise()">Volgende →</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>💡 <strong>Tip:</strong> Volg de volgorde; rusttijden zijn 60–90 sec. Pijn > 4/10? Stop en consult fysiotherapeut.</p>
+            <p style="margin-top: 12px; font-size: 11px;">Gemaakt gebaseerd op evidence-based hamstring revalidatieprotocollen</p>
+        </footer>
+    </div>
+
+    <script>
+        const exercises = [
+            // Phase 1
+            { phase: 1, name: 'Foam Rolling (Hamstring)', order: 0 },
+            { phase: 1, name: 'Monster Walks', order: 1 },
+            { phase: 1, name: 'Ground Sweeps', order: 2 },
+            { phase: 1, name: 'Supine Bridge (2 benen)', order: 3 },
+            { phase: 1, name: 'Prone Hamstring Curls', order: 4 },
+            // Phase 2
+            { phase: 2, name: 'Foam Rolling (Pre-Training)', order: 0 },
+            { phase: 2, name: 'Dynamic Stretching (Monster Walks)', order: 1 },
+            { phase: 2, name: 'Nordic Hamstring Curl (Voorbereiding)', order: 2 },
+            { phase: 2, name: 'Single-Leg Romanian Deadlift (RDL)', order: 3 },
+            { phase: 2, name: 'Swiss Ball Hamstring Curl', order: 4 },
+            { phase: 2, name: 'Plank & Side Plank', order: 5 },
+            { phase: 2, name: 'Statische Hamstring Stretch', order: 6 },
+            // Phase 3
+            { phase: 3, name: 'Nordic Hamstring Curl (VOLLEDIGE ROM)', order: 0 },
+            { phase: 3, name: 'Cadence Drill (Running Training)', order: 1 },
+            { phase: 3, name: 'Hamstring/Quad Kracht Testing', order: 2 },
+        ];
+
+        let currentPhase = 1;
+        let currentExerciseIndex = 0;
+
+        function selectPhase(phase) {
+            currentPhase = phase;
+            currentExerciseIndex = 0;
+            updateDisplay();
+        }
+
+        function nextExercise() {
+            const phaseExercises = exercises.filter(e => e.phase === currentPhase);
+            if (currentExerciseIndex < phaseExercises.length - 1) {
+                currentExerciseIndex++;
+                updateDisplay();
+            }
+        }
+
+        function previousExercise() {
+            if (currentExerciseIndex > 0) {
+                currentExerciseIndex--;
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            // Hide all cards
+            document.querySelectorAll('.exercise-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // Show current card
+            const cards = document.querySelectorAll(`[data-phase="${currentPhase}"]`);
+            if (cards[currentExerciseIndex]) {
+                cards[currentExerciseIndex].classList.add('active');
+            }
+
+            // Update counter
+            const phaseExercises = exercises.filter(e => e.phase === currentPhase);
+            document.getElementById('exerciseCount').textContent = 
+                `${currentExerciseIndex + 1} van ${phaseExercises.length}`;
+
+            // Update progress bar
+            const totalExercises = document.querySelectorAll('.exercise-card').length;
+            const currentCard = document.querySelector('.exercise-card.active');
+            const allCards = Array.from(document.querySelectorAll('.exercise-card'));
+            const progressPercent = ((allCards.indexOf(currentCard) + 1) / totalExercises) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+
+            // Update nav buttons
+            document.querySelector('.nav-btn.secondary').disabled = currentExerciseIndex === 0;
+            document.querySelector('.nav-btn:not(.secondary)').disabled = 
+                currentExerciseIndex === phaseExercises.length - 1;
+
+            // Update active phase button
+            document.querySelectorAll('.phase-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.phase-btn')[currentPhase - 1].classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize
+        updateDisplay();
+    </script>
+</body>
+</html>
